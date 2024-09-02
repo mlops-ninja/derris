@@ -23,7 +23,7 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
     ): Promise<void> {
         webviewPanel.webview.options = {
             enableScripts: true,
-            localResourceRoots: [Uri.joinPath(this.context.extensionUri, "out"), Uri.joinPath(this.context.extensionUri, "webview-ui/public/build")],
+            localResourceRoots: [Uri.joinPath(this.context.extensionUri, "out"), Uri.joinPath(this.context.extensionUri, "webview-ui/dist")],
         };
 
 
@@ -56,7 +56,13 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
         });
 
         webviewPanel.webview.onDidReceiveMessage(message => {
-            switch (message.type) {
+            switch (message.command) {
+                case 'init-view':
+                    vscode.window.showInformationMessage('Webview Loaded');
+                    webviewPanel.webview.postMessage({
+                        type: 'init',
+                        text: document.getText(),
+                    })
                 case 'update':
                     return;
             }
@@ -69,9 +75,9 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
         // The CSS file from the Svelte build output
-        const stylesUri = getUri(webview, this.context.extensionUri, ["webview-ui", "public", "build", "bundle.css"]);
+        const stylesUri = getUri(webview, this.context.extensionUri, ["webview-ui", "dist", "assets", "index.css"]);
         // The JS file from the Svelte build output
-        const scriptUri = getUri(webview, this.context.extensionUri, ["webview-ui", "public", "build", "bundle.js"]);
+        const scriptUri = getUri(webview, this.context.extensionUri, ["webview-ui", "dist", "build", "index.js"]);
 
         const nonce = getNonce();
 
@@ -80,12 +86,12 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
             <!DOCTYPE html>
             <html lang="en">
             <head>
-                <title>Hello World</title>
+                <title>Editor</title>
                 <meta charset="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
                 <link rel="stylesheet" type="text/css" href="${stylesUri}">
-                <script defer nonce="${nonce}" src="${scriptUri}"></script>
+                <script type="module" defer nonce="${nonce}" src="${scriptUri}"></script>
             </head>
             <body>
             </body>
