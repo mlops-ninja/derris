@@ -5,15 +5,16 @@ import { getNonce } from '../utilities/getNonce';
 
 export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
     private static readonly viewType = 'derris.jwtEditor';
+    private registration: vscode.Disposable | undefined
 
     constructor(
         private readonly context: vscode.ExtensionContext
     ) { }
 
-    public static register(context: vscode.ExtensionContext): vscode.Disposable {
-        const provider = new JWTEditorProvider(context);
-        const providerRegistration = vscode.window.registerCustomEditorProvider(JWTEditorProvider.viewType, provider);
-        return providerRegistration;
+    public register() {
+        const registration = vscode.window.registerCustomEditorProvider(JWTEditorProvider.viewType, this);
+        this.context.subscriptions.push(registration);
+        this.registration = registration;
     }
 
     public async resolveCustomTextEditor(
@@ -26,16 +27,18 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
             localResourceRoots: [Uri.joinPath(this.context.extensionUri, "out"), Uri.joinPath(this.context.extensionUri, "webview-ui/dist")],
         };
 
+        let extension = document.uri.path.split('.').pop();
 
-        // This code is used to check if the user has enabled the JWT Editor in their settings.
-        const useJWTEditor = vscode.workspace.getConfiguration('derris').get('useJWTCustomEditor');
 
-        if (!useJWTEditor) {
-            vscode.commands.executeCommand('vscode.openWith', document.uri, 'vscode.default');
-            webviewPanel.dispose();
-            return;
-        } else {
-            webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
+        // Here we are checking the file extension to determine file type.
+        // Accorfing to it we are taking descision: if to open the file in default editor or in custom editor.
+        switch (extension) {
+            case 'jwt':
+                webviewPanel.webview.html = this._getHtmlForWebview(webviewPanel.webview);
+                webviewPanel.title = 'JWT Editor';
+                break;
+            default:
+                vscode.window.showErrorMessage('This file is not a JWT file.');
         }
 
         function updateWebview() {
