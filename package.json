@@ -20,14 +20,23 @@
     },
     "customEditors": [
       {
-        "viewType": "derris.jwtEditor",
-        "displayName": "JWT Editor",
+        "viewType": "derris.derrisEditor",
+        "displayName": "Derris Editor",
         "selector": [
           {
-            "filenamePattern": "*.jwt"
+            "filenamePattern": "*.{jwt,pem}"
           }
         ],
         "priority": "default"
+      },
+      {
+        "viewType": "derris.derrisViewer",
+        "displayName": "Derris Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.{der,pkcs12,pfx,p7b,p7c,p12,pen}"
+          }
+        ]
       }
     ],
     "commands": [
@@ -49,6 +58,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.5",
+    "@types/node-forge": "^1.3.11",
     "@types/vscode": "^1.46.0",
     "@typescript-eslint/eslint-plugin": "^8.3",
     "@typescript-eslint/parser": "^8.3",
@@ -58,5 +68,9 @@
     "glob": "^11.0",
     "prettier": "^3.3",
     "typescript": "^5.5"
+  },
+  "dependencies": {
+    "asn1js": "^3.0.5",
+    "node-forge": "^1.3.1"
   }
 }

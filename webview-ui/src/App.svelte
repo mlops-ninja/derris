@@ -1,9 +1,13 @@
 <script lang="ts">
   import { provideVSCodeDesignSystem, allComponents } from "@vscode/webview-ui-toolkit";
   import { vscode } from "./utilities/vscode";
-  import { afterUpdate, beforeUpdate, onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
 
   provideVSCodeDesignSystem().register(allComponents);
+
+  type State = {
+    count: number;
+  };
 
   let count = 0;
 
@@ -15,10 +19,13 @@
       command: "init-view",
       text: "Hello from the webview!",
     });
+
+    count = (vscode.getState() as State).count || 0;
   });
 
   function increment() {
     count += 1;
+    vscode.setState({ count });
   }
 
   function handleHowdyClick() {
@@ -32,7 +39,7 @@
     console.log("Received message from extension", event.data);
     switch (event.data.type) {
       case "init":
-        jwtData = event.data.text;
+        jwtData = event.data.data.data;
         break;
     }
   }

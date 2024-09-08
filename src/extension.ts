@@ -1,7 +1,7 @@
 import { ExtensionContext } from "vscode";
-import { JWTEditorProvider } from "./providers/JwtEditorProvider";
+import { DerrisEditorProvider } from "./providers/EditorProvider";
 
 export function activate(context: ExtensionContext) {
-  const customJWTEditorProvider = new JWTEditorProvider(context);
+  const customJWTEditorProvider = new DerrisEditorProvider(context);
   customJWTEditorProvider.register();
 }

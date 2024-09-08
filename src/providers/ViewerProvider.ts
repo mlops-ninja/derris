@@ -3,8 +3,8 @@ import { Uri } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
 
-export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
-    private static readonly viewType = 'derris.jwtEditor';
+export class DerrisEditorProvider implements vscode.CustomTextEditorProvider {
+    private static readonly viewType = 'derris.derrisEditor';
     private registration: vscode.Disposable | undefined
 
     constructor(
@@ -12,7 +12,7 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
     ) { }
 
     public register() {
-        const registration = vscode.window.registerCustomEditorProvider(JWTEditorProvider.viewType, this);
+        const registration = vscode.window.registerCustomEditorProvider(DerrisEditorProvider.viewType, this);
         this.context.subscriptions.push(registration);
         this.registration = registration;
     }
@@ -38,7 +38,9 @@ export class JWTEditorProvider implements vscode.CustomTextEditorProvider {
                 webviewPanel.title = 'JWT Editor';
                 break;
             default:
-                vscode.window.showErrorMessage('This file is not a JWT file.');
+                vscode.window.showErrorMessage('This file is not supported by Derris.');
+                webviewPanel.dispose();
+                return;
         }
 
         function updateWebview() {
