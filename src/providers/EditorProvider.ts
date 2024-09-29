@@ -3,6 +3,7 @@ import { Uri } from 'vscode';
 import { getUri } from '../utilities/getUri';
 import { getNonce } from '../utilities/getNonce';
 import { parsePemCertificate } from '../certs/der';
+import { jwtEditorStatefromToken } from '../common/jwt_server';
 
 export class DerrisEditorProvider implements vscode.CustomTextEditorProvider {
     private static readonly viewType = 'derris.derrisEditor';
@@ -51,7 +52,7 @@ export class DerrisEditorProvider implements vscode.CustomTextEditorProvider {
         function updateWebview() {
             webviewPanel.webview.postMessage({
                 type: 'update',
-                text: document.getText(),
+                payload: jwtEditorStatefromToken(document.getText()),
             });
         }
 
@@ -60,12 +61,12 @@ export class DerrisEditorProvider implements vscode.CustomTextEditorProvider {
             switch (extension) {
                 case 'jwt':
                     return {
-                        type: 'jwt',
-                        text: document.getText(),
+                        fileType: 'jwt',
+                        tokenState: jwtEditorStatefromToken(document.getText()),
                     }
                 case 'pem':
                     return {
-                        type: 'pem',
+                        fileType: 'pem',
                         text: document.getText(),
                         data: parsePemCertificate(document.getText())
                     }
@@ -85,10 +86,9 @@ export class DerrisEditorProvider implements vscode.CustomTextEditorProvider {
         webviewPanel.webview.onDidReceiveMessage(message => {
             switch (message.command) {
                 case 'init-view':
-                    vscode.window.showInformationMessage('Webview Loaded');
                     webviewPanel.webview.postMessage({
                         type: 'init',
-                        data: dataToSend()
+                        payload: dataToSend()
                     })
                 case 'update':
                     return;
