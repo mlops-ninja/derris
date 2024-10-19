@@ -26,7 +26,7 @@ export class JWTEditorState {
     isPubKeyMatch: boolean;
 
     constructor();
-    constructor(token: string, parsedToken: ParsedToken);
+    constructor(token: string, parsedToken?: ParsedToken);
 
     constructor(token?: string, parsedToken?: ParsedToken) {
         if (token && !parsedToken) {
@@ -71,7 +71,7 @@ export class JWTEditorState {
 
     // if key is set - we can edit the token
     public get isEditable(): boolean {
-        return !(this.privKey == "" || !this.isPrivKeyValid);
+        return !(this.resultingToken && (this.privKey == "" || !this.isPrivKeyValid));
     }
 
     public get isSymmetric(): boolean {

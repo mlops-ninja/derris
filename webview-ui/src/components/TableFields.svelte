@@ -146,13 +146,13 @@
             ></vscode-text-field>
             <vscode-button
                 appearance="primary"
-                class="add-item-button"
+                class="save-item-button"
                 aria-label="Save Item"
                 on:click={saveAddItem}>✔️</vscode-button
             >
             <vscode-button
                 appearance="secondary"
-                class="add-item-button cancel-button"
+                class="save-item-button"
                 aria-label="Cancel Item"
                 on:click={cancelAddItem}>✖️</vscode-button
             >
@@ -162,7 +162,7 @@
 {#if !addingItem}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <vscode-button disabled={!isEditing} appearance="primary" aria-label="Add Item" on:click={newItemField}
+    <vscode-button class="add-item-button" disabled={!isEditing} appearance="primary" aria-label="Add Item" on:click={newItemField}
         >Add Item</vscode-button
     >
 {/if}
@@ -180,6 +180,9 @@
         width: 100%;
     }
     .add-item-button {
+        margin: 5px 0px;
+    }
+    .save-item-button {
         margin: 0;
         height: 25px;
     }
